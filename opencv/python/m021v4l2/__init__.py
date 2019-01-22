@@ -21,7 +21,7 @@ along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 import numpy as np
 import libm021v4l2 as lib
 
-# XXX This is kind of a sleazy implementation, partly in Python, partly in C extension.  
+# XXX This is kind of a sleazy implementation, partly in Python, partly in C extension.
 # XXX We probably should do the whole thing in C.
 
 class _Capture(object):
@@ -29,11 +29,11 @@ class _Capture(object):
     Abstract parent class; do not instantiate directly.
     '''
 
-    def __init__(self, rows, cols, bcorrect, gcorrect, rcorrect):
+    def __init__(self, rows, cols, bcorrect, gcorrect, rcorrect, cam_id):
 
         self.frame = np.zeros((rows,cols,3), dtype='uint8')
 
-        lib.init(self.frame, bcorrect, gcorrect, rcorrect) 
+        lib.init(self.frame, bcorrect, gcorrect, rcorrect, cam_id)
 
     def read(self):
         '''
@@ -47,7 +47,7 @@ class _Capture(object):
 
     def getCount(self):
         '''
-        Returns the number of frames acquired since init. 
+        Returns the number of frames acquired since init.
         '''
 
         return lib.count()
@@ -59,9 +59,9 @@ class Capture1280x720(_Capture):
     red, green, and blue components, respectively.
     '''
 
-    def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50):
+    def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50, cam_id=0):
 
-        _Capture.__init__(self, 720, 1280, bcorrect, gcorrect, rcorrect) 
+        _Capture.__init__(self, 720, 1280, bcorrect, gcorrect, rcorrect, cam_id)
 
 class Capture800x460(_Capture):
     '''
@@ -70,9 +70,9 @@ class Capture800x460(_Capture):
     red, green, and blue components, respectively.
     '''
 
-    def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50):
+    def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50, cam_id=0):
 
-        _Capture.__init__(self, 460, 800, bcorrect, gcorrect, rcorrect) 
+        _Capture.__init__(self, 460, 800, bcorrect, gcorrect, rcorrect, cam_id)
 
 class Capture640x480(_Capture):
     '''
@@ -81,6 +81,6 @@ class Capture640x480(_Capture):
     red, green, and blue components, respectively.
     '''
 
-    def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50):
+    def __init__(self, bcorrect=50, gcorrect=0, rcorrect=50, cam_id=0):
 
-        _Capture.__init__(self, 480, 640, bcorrect, gcorrect, rcorrect) 
+        _Capture.__init__(self, 480, 640, bcorrect, gcorrect, rcorrect, cam_id)

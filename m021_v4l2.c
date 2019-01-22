@@ -51,29 +51,29 @@ uint64_t s_ns_time_monotonic()
 
 /*------------------------------- Color space conversions --------------------*/
 
-// raw bayer functions 
+// raw bayer functions
 // from libv4l bayer.c, (C) 2008 Hans de Goede <j.w.r.degoede@hhs.nl>
 //Note: original bayer_to_bgr24 code from :
 //  1394-Based Digital Camera Control Library
-// 
+//
 //  Bayer pattern decoding functions
-// 
+//
 //  Written by Damien Douxchamps and Frederic Devernay
 static void convert_border_bayer_line_to_bgr24( uint8_t* bayer, uint8_t* adjacent_bayer,
 	uint8_t *bgr, int width, bool start_with_green, bool blue_line)
 {
 	int t0, t1;
 
-	if (start_with_green) 
+	if (start_with_green)
 	{
 	/* First pixel */
-		if (blue_line) 
+		if (blue_line)
 		{
 			*bgr++ = bayer[1];
 			*bgr++ = bayer[0];
 			*bgr++ = adjacent_bayer[0];
-		} 
-		else 
+		}
+		else
 		{
 			*bgr++ = adjacent_bayer[0];
 			*bgr++ = bayer[0];
@@ -82,13 +82,13 @@ static void convert_border_bayer_line_to_bgr24( uint8_t* bayer, uint8_t* adjacen
 		/* Second pixel */
 		t0 = (bayer[0] + bayer[2] + adjacent_bayer[1] + 1) / 3;
 		t1 = (adjacent_bayer[0] + adjacent_bayer[2] + 1) >> 1;
-		if (blue_line) 
+		if (blue_line)
 		{
 			*bgr++ = bayer[1];
 			*bgr++ = t0;
 			*bgr++ = t1;
-		} 
-		else 
+		}
+		else
 		{
 			*bgr++ = t1;
 			*bgr++ = t0;
@@ -97,18 +97,18 @@ static void convert_border_bayer_line_to_bgr24( uint8_t* bayer, uint8_t* adjacen
 		bayer++;
 		adjacent_bayer++;
 		width -= 2;
-	} 
-	else 
+	}
+	else
 	{
 		/* First pixel */
 		t0 = (bayer[1] + adjacent_bayer[0] + 1) >> 1;
-		if (blue_line) 
+		if (blue_line)
 		{
 			*bgr++ = bayer[0];
 			*bgr++ = t0;
 			*bgr++ = adjacent_bayer[1];
-		} 
-		else 
+		}
+		else
 		{
 			*bgr++ = adjacent_bayer[1];
 			*bgr++ = t0;
@@ -117,9 +117,9 @@ static void convert_border_bayer_line_to_bgr24( uint8_t* bayer, uint8_t* adjacen
 		width--;
 	}
 
-	if (blue_line) 
+	if (blue_line)
 	{
-		for ( ; width > 2; width -= 2) 
+		for ( ; width > 2; width -= 2)
 		{
 			t0 = (bayer[0] + bayer[2] + 1) >> 1;
 			*bgr++ = t0;
@@ -136,10 +136,10 @@ static void convert_border_bayer_line_to_bgr24( uint8_t* bayer, uint8_t* adjacen
 			bayer++;
 			adjacent_bayer++;
 		}
-	} 
-	else 
+	}
+	else
 	{
-		for ( ; width > 2; width -= 2) 
+		for ( ; width > 2; width -= 2)
 		{
 			t0 = (bayer[0] + bayer[2] + 1) >> 1;
 			*bgr++ = adjacent_bayer[1];
@@ -158,17 +158,17 @@ static void convert_border_bayer_line_to_bgr24( uint8_t* bayer, uint8_t* adjacen
 		}
 	}
 
-	if (width == 2) 
+	if (width == 2)
 	{
 		/* Second to last pixel */
 		t0 = (bayer[0] + bayer[2] + 1) >> 1;
-		if (blue_line) 
+		if (blue_line)
 		{
 			*bgr++ = t0;
 			*bgr++ = bayer[1];
 			*bgr++ = adjacent_bayer[1];
-		} 
-		else 
+		}
+		else
 		{
 			*bgr++ = adjacent_bayer[1];
 			*bgr++ = bayer[1];
@@ -176,29 +176,29 @@ static void convert_border_bayer_line_to_bgr24( uint8_t* bayer, uint8_t* adjacen
 		}
 		/* Last pixel */
 		t0 = (bayer[1] + adjacent_bayer[2] + 1) >> 1;
-		if (blue_line) 
+		if (blue_line)
 		{
 			*bgr++ = bayer[2];
 			*bgr++ = t0;
 			*bgr++ = adjacent_bayer[1];
 		}
-		else 
+		else
 		{
 			*bgr++ = adjacent_bayer[1];
 			*bgr++ = t0;
 			*bgr++ = bayer[2];
 		}
-	} 
-	else 
+	}
+	else
 	{
 		/* Last pixel */
-		if (blue_line) 
+		if (blue_line)
 		{
 			*bgr++ = bayer[0];
 			*bgr++ = bayer[1];
 			*bgr++ = adjacent_bayer[1];
-		} 
-		else 
+		}
+		else
 		{
 			*bgr++ = adjacent_bayer[1];
 			*bgr++ = bayer[1];
@@ -218,26 +218,26 @@ static void bayer_to_rgbbgr24(uint8_t *bayer,
 	bgr += width * 3;
 
 	/* reduce height by 2 because of the special case top/bottom line */
-	for (height -= 2; height; height--) 
+	for (height -= 2; height; height--)
 	{
 		int t0, t1;
 		/* (width - 2) because of the border */
 		uint8_t *bayerEnd = bayer + (width - 2);
 
-		if (start_with_green) 
+		if (start_with_green)
 		{
 			/* OpenCV has a bug in the next line, which was
 			t0 = (bayer[0] + bayer[width * 2] + 1) >> 1; */
 			t0 = (bayer[1] + bayer[width * 2 + 1] + 1) >> 1;
 			/* Write first pixel */
 			t1 = (bayer[0] + bayer[width * 2] + bayer[width + 1] + 1) / 3;
-			if (blue_line) 
+			if (blue_line)
 			{
 				*bgr++ = t0;
 				*bgr++ = t1;
 				*bgr++ = bayer[width];
-			} 
-			else 
+			}
+			else
 			{
 				*bgr++ = bayer[width];
 				*bgr++ = t1;
@@ -246,31 +246,31 @@ static void bayer_to_rgbbgr24(uint8_t *bayer,
 
 			/* Write second pixel */
 			t1 = (bayer[width] + bayer[width + 2] + 1) >> 1;
-			if (blue_line) 
+			if (blue_line)
 			{
 				*bgr++ = t0;
 				*bgr++ = bayer[width + 1];
 				*bgr++ = t1;
-			} 
-			else 
+			}
+			else
 			{
 				*bgr++ = t1;
 				*bgr++ = bayer[width + 1];
 				*bgr++ = t0;
 			}
 			bayer++;
-		} 
-		else 
+		}
+		else
 		{
 			/* Write first pixel */
 			t0 = (bayer[0] + bayer[width * 2] + 1) >> 1;
-			if (blue_line) 
+			if (blue_line)
 			{
 				*bgr++ = t0;
 				*bgr++ = bayer[width];
 				*bgr++ = bayer[width + 1];
-			} 
-			else 
+			}
+			else
 			{
 				*bgr++ = bayer[width + 1];
 				*bgr++ = bayer[width];
@@ -278,9 +278,9 @@ static void bayer_to_rgbbgr24(uint8_t *bayer,
 			}
 		}
 
-		if (blue_line) 
+		if (blue_line)
 		{
-			for (; bayer <= bayerEnd - 2; bayer += 2) 
+			for (; bayer <= bayerEnd - 2; bayer += 2)
 			{
 				t0 = (bayer[0] + bayer[2] + bayer[width * 2] +
 					bayer[width * 2 + 2] + 2) >> 2;
@@ -298,10 +298,10 @@ static void bayer_to_rgbbgr24(uint8_t *bayer,
 				*bgr++ = bayer[width + 2];
 				*bgr++ = t1;
 			}
-		} 
-		else 
+		}
+		else
 		{
-			for (; bayer <= bayerEnd - 2; bayer += 2) 
+			for (; bayer <= bayerEnd - 2; bayer += 2)
 			{
 				t0 = (bayer[0] + bayer[2] + bayer[width * 2] +
 					bayer[width * 2 + 2] + 2) >> 2;
@@ -321,7 +321,7 @@ static void bayer_to_rgbbgr24(uint8_t *bayer,
 			}
 		}
 
-		if (bayer < bayerEnd) 
+		if (bayer < bayerEnd)
 		{
 			/* write second to last pixel */
 			t0 = (bayer[0] + bayer[2] + bayer[width * 2] +
@@ -329,13 +329,13 @@ static void bayer_to_rgbbgr24(uint8_t *bayer,
 			t1 = (bayer[1] + bayer[width] +
 				bayer[width + 2] + bayer[width * 2 + 1] +
 				2) >> 2;
-			if (blue_line) 
+			if (blue_line)
 			{
 				*bgr++ = t0;
 				*bgr++ = t1;
 				*bgr++ = bayer[width + 1];
-			} 
-			else 
+			}
+			else
 			{
 				*bgr++ = bayer[width + 1];
 				*bgr++ = t1;
@@ -343,32 +343,32 @@ static void bayer_to_rgbbgr24(uint8_t *bayer,
 			}
 			/* write last pixel */
 			t0 = (bayer[2] + bayer[width * 2 + 2] + 1) >> 1;
-			if (blue_line) 
+			if (blue_line)
 			{
 				*bgr++ = t0;
 				*bgr++ = bayer[width + 2];
 				*bgr++ = bayer[width + 1];
-			} 
-			else 
+			}
+			else
 			{
 				*bgr++ = bayer[width + 1];
 				*bgr++ = bayer[width + 2];
 				*bgr++ = t0;
 			}
 			bayer++;
-		} 
+		}
 		else
 		{
 			/* write last pixel */
 			t0 = (bayer[0] + bayer[width * 2] + 1) >> 1;
 			t1 = (bayer[1] + bayer[width * 2 + 1] + bayer[width] + 1) / 3;
-			if (blue_line) 
+			if (blue_line)
 			{
 				*bgr++ = t0;
 				*bgr++ = t1;
 				*bgr++ = bayer[width + 1];
-			} 
-			else 
+			}
+			else
 			{
 				*bgr++ = bayer[width + 1];
 				*bgr++ = t1;
@@ -388,32 +388,32 @@ static void bayer_to_rgbbgr24(uint8_t *bayer,
 		!start_with_green, !blue_line);
 }
 
-static void 
+static void
 bayer_to_rgb24(uint8_t *pBay, uint8_t *pRGB24, int width, int height)
 {
     bayer_to_rgbbgr24(pBay, pRGB24, width, height, true, true);
 }
 
-static void 
+static void
 bayer_to_bgr24(uint8_t *pBay, uint8_t *pRGB24, int width, int height)
 {
-    bayer_to_rgbbgr24(pBay, pRGB24, width, height, true, false);
+    bayer_to_rgbbgr24(pBay, pRGB24, width, height, true, true);
 }
 
 static void
-rgb2yuyv(uint8_t *prgb, uint8_t *pyuv, int width, int height) 
+rgb2yuyv(uint8_t *prgb, uint8_t *pyuv, int width, int height)
 {
 
 	int i=0;
-	for(i=0;i<(width*height*3);i=i+6) 
+	for(i=0;i<(width*height*3);i=i+6)
 	{
-		/* y */ 
+		/* y */
 		*pyuv++ =CLIP(0.299 * (prgb[i] - 128) + 0.587 * (prgb[i+1] - 128) + 0.114 * (prgb[i+2] - 128) + 128);
 		/* u */
 		*pyuv++ =CLIP(((- 0.147 * (prgb[i] - 128) - 0.289 * (prgb[i+1] - 128) + 0.436 * (prgb[i+2] - 128) + 128) +
 			(- 0.147 * (prgb[i+3] - 128) - 0.289 * (prgb[i+4] - 128) + 0.436 * (prgb[i+5] - 128) + 128))/2);
-		/* y1 */ 
-		*pyuv++ =CLIP(0.299 * (prgb[i+3] - 128) + 0.587 * (prgb[i+4] - 128) + 0.114 * (prgb[i+5] - 128) + 128); 
+		/* y1 */
+		*pyuv++ =CLIP(0.299 * (prgb[i+3] - 128) + 0.587 * (prgb[i+4] - 128) + 0.114 * (prgb[i+5] - 128) + 128);
 		/* v*/
 		*pyuv++ =CLIP(((0.615 * (prgb[i] - 128) - 0.515 * (prgb[i+1] - 128) - 0.100 * (prgb[i+2] - 128) + 128) +
 			(0.615 * (prgb[i+3] - 128) - 0.515 * (prgb[i+4] - 128) - 0.100 * (prgb[i+5] - 128) + 128))/2);
@@ -772,7 +772,7 @@ static void add(uint8_t * val, int8_t inc)
     else if (newval > 255)
         *val = 255;
 
-    else 
+    else
         * val = newval;
 }
 

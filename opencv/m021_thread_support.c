@@ -30,7 +30,7 @@ static void * loop(void * arg)
     pthread_mutex_t lock = data->lock;
 
     m021_t cap;
-    m021_init(0, &cap, data->cols, data->rows);
+    m021_init(data->cam_id, &cap, data->cols, data->rows);
 
     data->count = 0;
 
@@ -50,8 +50,8 @@ static void * loop(void * arg)
     return (void *)0;
 }
 
-void m021_thread_start(m021_thread_data_t * data, int rows, int cols, uint8_t * bytes, 
-        int bcorrect, int gcorrect, int rcorrect)
+void m021_thread_start(m021_thread_data_t * data, int rows, int cols, uint8_t * bytes,
+        int bcorrect, int gcorrect, int rcorrect, int cam_id)
 {
     pthread_mutex_t lock;
 
@@ -67,9 +67,8 @@ void m021_thread_start(m021_thread_data_t * data, int rows, int cols, uint8_t * 
     data->bcorrect = bcorrect;
     data->gcorrect = gcorrect;
     data->rcorrect = rcorrect;
+    data->cam_id = cam_id;
 
-    if (pthread_create(&data->video_thread, NULL, loop, data)) 
+    if (pthread_create(&data->video_thread, NULL, loop, data))
         printf("\nFailed to create thread\n");
 }
-
-

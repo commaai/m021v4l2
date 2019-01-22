@@ -32,8 +32,9 @@ typedef struct {
     int bcorrect;
     int gcorrect;
     int rcorrect;
+    int cam_id;
 
 } m021_thread_data_t;
 
-void m021_thread_start(m021_thread_data_t * data, int rows, int cols, uint8_t * bytes, 
-        int bcorrect, int gcorrect, int rcorrect);
+void m021_thread_start(m021_thread_data_t * data, int rows, int cols, uint8_t * bytes,
+        int bcorrect, int gcorrect, int rcorrect, int cam_id);

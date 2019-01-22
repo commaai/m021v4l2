@@ -1,6 +1,6 @@
 /*
    libm021v4l2.c - Python extension for Leopard Imaging M021 camera on Linux.
-  
+
    Copyright (C) 2016 Simon D. Levy
 
    This file is part of M021_V4L2.
@@ -32,9 +32,9 @@ static m021_thread_data_t thread_data;
 static PyObject * init (PyObject * dummy, PyObject * args)
 {
     PyObject * obj = NULL;
-    int bcorrect, gcorrect, rcorrect;
+    int bcorrect, gcorrect, rcorrect, cam_id;
 
-    if (!PyArg_ParseTuple(args, "O!iii", &PyArray_Type, &obj, &bcorrect, &gcorrect, &rcorrect))
+    if (!PyArg_ParseTuple(args, "O!iiii", &PyArray_Type, &obj, &bcorrect, &gcorrect, &rcorrect, &cam_id))
         return NULL;
 
     PyArrayObject * nparray = (PyArrayObject*)PyArray_FROM_OTF(obj, NPY_UINT8, NPY_INOUT_ARRAY);
@@ -47,8 +47,8 @@ static PyObject * init (PyObject * dummy, PyObject * args)
     int rows = nparray->dimensions[0];
     int cols = nparray->dimensions[1];
 
-    m021_thread_start(&thread_data, rows, cols, (uint8_t*)PyArray_GETPTR3(nparray, 0, 0, 0), 
-            bcorrect, gcorrect, rcorrect);
+    m021_thread_start(&thread_data, rows, cols, (uint8_t*)PyArray_GETPTR3(nparray, 0, 0, 0),
+            bcorrect, gcorrect, rcorrect, cam_id);
 
     Py_DECREF(nparray);
 
