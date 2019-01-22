@@ -25,8 +25,8 @@ along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 from distutils.core import setup, Extension
 import numpy as np
 
-ext_modules = [Extension('libm021v4l2', 
-    sources = ['libm021v4l2.c', '../m021_thread_support.c', '../../m021_v4l2.c'], 
+ext_modules = [Extension('libm021v4l2',
+    sources = ['libm021v4l2.c', '../m021_thread_support.c', '../../m021_v4l2.c'],
     include_dirs = ['..', '../..'],
     libraries = ['pthread', 'v4l2', 'udev']
     )]
