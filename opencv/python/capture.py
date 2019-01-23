@@ -21,26 +21,43 @@ along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
 import cv2
+import os
+import threading
+import subprocess
 from m021v4l2 import Capture1280x720
 from time import time
+from subprocess import Popen, PIPE
 
-cap = Capture1280x720(cam_id=1)
+start = time
 
-start = time()
+class camThread(threading.Thread):
+    def __init__(self, previewName, camID):
+	threading.Thread.__init__(self)
+	self.previewName = previewName
+        self.camID = camID
+    def run(self):
+	camPreview(self.previewName, self.camID)
 
-while True:
+def camPreview(previewName, camID):
+    cv2.namedWindow(previewName)
+    cap = Capture1280x720(cam_id=camID)
+    if cap.getCount >= 1:
+       rval, frame = cap.read()
+    else:
+       rval = False
 
-    # Capture frame-by-frame
-    ret, frame = cap.read()
+    while rval:
+        cv2.imshow(previewName, frame)
+        key = cv2.waitKey(20)
+        if key == 27:
+           break
+    cv2.destroyWindow(previewName)
 
-    # Display the resulting frame
-    cv2.imshow('LI-USB30-M021',frame)
-    if cv2.waitKey(1) & 0xFF == 27:
-        break
+# Use this to open threads
+thread1 = camThread('LI-USB30-M021', 1)
+#thread2 = camThread('LI-USB30-M021', 2)
+#thread3 = camThread('LI-USB30-M021', 3)
 
-count = cap.getCount()
-elapsed = time() - start
-print('%d frames in %3.2f seconds = %3.2f fps' % (count, elapsed, count/elapsed))
-
-# When everything done, release the capture
-cv2.destroyAllWindows()
+thread1.start()
+#thread2.start()
+#thread3.start()
